@@ -8,53 +8,47 @@ columnmean  <- function(y, removeNA = TRUE) {
   means  
 }
 
-pollutantmean <- function(folder, pm, id){
+pollutantmean <- function(folder, pm, id=1:322){
   
-  setwd(paste("C:/Users/kgiab/Desktop/DataScience/rprog_data_specdata/", folder, sep=""))
+  setwd(paste("C:/Users/KSGI/Desktop/Data Science/specdata/", folder, sep=""))
   
   files <- list.files(pattern = ".csv")
-  means <- as.vector(NULL)
-  
-  
-  for (i in id){
+  fil <- lapply(files, read.csv, h=T, sep=",")
+  final <- do.call(rbind, fil)
     
-    monitor <- read.csv(files[i], h = TRUE, sep=",")
-    me <- mean(monitor[, pm], na.rm = TRUE)
-    means <- c(means, me)
+    monitor <- subset(final, subset=ID %in% id)
+    df <- data.frame(na.omit(monitor))
     
-  }
-  print(means)
+    mm <- mean(df[,pm]) 
+    print(round(mm,3))
   
 }
-pollutantmean(folder="specdata", "sulfate", 1:10)
-pollutantmean(folder="specdata", "nitrate", 73:99)
+pollutantmean(folder="specdata", pm ="sulfate", id = c(1:10))
 
 library(gtools)
 
-complete <- function(folder, id){
-  setwd(paste("C:/Users/kgiab/Desktop/DataScience/rprog_data_specdata/", folder, sep=""))
+complete <- function(folder, id=1:322){
+  setwd(paste("C:/Users/KSGI/Desktop/Data Science/specdata/", folder, sep=""))
   
   files <- list.files(pattern = ".csv")
+  fil <- lapply(files, read.csv, h=T, sep=",")
+  final <- do.call(rbind, fil)
+  nobs <- numeric()
   
-  for (i in id){
-    
-    monitor <- read.csv(files[i], h = TRUE, sep=",")
-    comple <- complete.cases(monitor)
-    data <- data.frame(id=i, nobs=sum(comple))
-    assign(paste("data_", i, sep=""), data)
-    
+  for (i in id)
+  {  
+      monitor <- final[which(final$ID==i),]
+      comple <- complete.cases(monitor)
+      com <- sum(comple)
+      nobs <- c(nobs, com)
   }
-  ll <- mixedsort(ls(pattern="data_"))
-  ll_1 <- lapply(ll, get)
-  comp <- do.call(rbind, ll_1)
-  print(comp)
-  rm(list = ls(pattern="data_"))
-  
+  df1 <- data.frame(id, nobs)
+  df1
 }
 
 complete(folder = "specdata", id = 30:25)
 
-thres <- function(folder, threshold=0){
+corr <- function(folder, threshold=0){
   setwd(paste0("C:/Users/KSGI/Desktop/Data Science/specdata/", folder, sep=""))
   
   files <- list.files(pattern = ".csv")
@@ -75,3 +69,4 @@ thres <- function(folder, threshold=0){
   }
   print(vcor)
 }
+
