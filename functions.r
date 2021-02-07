@@ -70,3 +70,16 @@ corr <- function(folder, threshold=0){
   print(vcor)
 }
 
+# How to use split and apply functions ##
+library(datasets)
+head(iris)
+fac <- split(iris, iris$Species)
+
+ss <- lapply(fac, function (x) colMeans(x[, c()]))
+
+#invisible(x) <- # prevents autoprinting of a functions last argument
+
+
+
+
+
