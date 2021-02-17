@@ -80,6 +80,33 @@ ss <- lapply(fac, function (x) colMeans(x[, c()]))
 #invisible(x) <- # prevents autoprinting of a functions last argument
 
 
+fileurl<- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Frestaurants.xml"
+
+fil <- xmlTreeParse(fileurl, useInternalNodes = TRUE)
+
+rootNode <- xmlRoot(fil)
+xmlName(rootNode)
+xs <-xpathSApply(rootNode, "//name", xmlValue)
+
+length(xs[xs==21231])
+
+###Dplyr funtcions ##
+by_package <- group_by(cran, package)
+
+pack_sum <- summarize(by_package,
+                      count =n() ,
+                      unique = n_distinct(ip_id),
+                      countries =n_distinct(country) ,
+                      avg_bytes = mean(size))
+
+quantile(pack_sum$count, probs=0.99)
+
+top_counts <- filter(pack_sum, count >679)
+top_counts_sorted <- arrange(top_counts, desc(count))
+
+top_unique <- filter(pack_sum, unique >465)
+top_unique_sorted <- arrange(top_unique, desc(unique))
+
 
 
 
