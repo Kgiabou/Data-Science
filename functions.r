@@ -70,8 +70,6 @@ corr <- function(folder, threshold=0){
   print(vcor)
 }
 
-<<<<<<< HEAD
-=======
 # How to use split and apply functions ##
 library(datasets)
 head(iris)
@@ -109,4 +107,74 @@ top_counts_sorted <- arrange(top_counts, desc(count))
 top_unique <- filter(pack_sum, unique >465)
 top_unique_sorted <- arrange(top_unique, desc(unique))
 
+### Read MySQL data ##
+ucsDB <- dbConnect(MySQL(), user="genome", host="genome-euro-mysql.soe.ucsc.edu")
+result <- dbGetQuery(ucsDB, "show databases;")
 
+dbDisconnect(ucsDB)
+
+## choose specific DBs###
+
+hg19 <- dbConnect(MySQL(), user="genome", db= "hg19", host="genome-euro-mysql.soe.ucsc.edu")
+
+tabl <- dbListTables(hg19)
+tabl
+tabl[1:5]
+dbListFields(hg19, "affyU133Plus2") ## get List of table names like showTables command
+dbGetQuery(hg19, "select count(*) as nrows from affyU133Plus2") ## write SQL queries  
+
+affyData <- dbReadTable(hg19, "affyU133Plus2") ## get the data in table format
+
+query <- dbSendQuery(hg19, "select * from affyU133Plus2 where misMatches between 1 and 3") ### select subset of data
+ff <- fetch(query)
+quantile(ff$misMatches)
+
+dbDisconnect(hg19) ## always close the connection.
+
+
+##### HDF5 data - hiercarchical data format ####
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install(version = "3.12")
+
+BiocManager::install("rhdf5")
+
+creat <- h5createFile("example.h5")
+creat
+
+
+### Reading from the web - ReadLines###
+
+con <-url("https://scholar.google.com/citations?hl=en&user=HI-I6C0AAAAJ")
+htmlCode <- readLines(con)
+
+close(con)
+htmlCode
+
+library(XML)
+
+url <- "https://scholar.google.com/citations?hl=en&user=HI-I6C0AAAAJ"
+html <- htmlTreeParse(url, useInternalNodes = TRUE)
+xpathSApply(html, "//title", xmlValue)
+
+### Using httr package - works best ###
+library(httr); html <- GET(url)
+con <- content(html, as="text")
+parsehtml <- htmlParse(con, asText = TRUE)
+xpathSApply(parsehtml, "//title", xmlValue)
+
+## We can use the authenticate argument in the GET function to access websites that need password###
+
+## READ APIS to download data - Application Porgramming Interfaces
+
+library(httr)
+myapp <- oauth_app("twitter", key="yourConsumerKeyHere", secret = "yourConsumerSecretHere")
+sig <- sign_oauth1.0(myapp, 
+                       token = 'yourTokenHere'
+                        , token_secret = "yourTokenSecretHere")
+
+homeTL <- GET("http://api.twitter.com/1.1/statuses/home_timeline.json", sig)
+json1 <- content(homeTL)
+json2 <-jsonlite::fromJSON(toJSON(json1))
+json2[1,1:4]
