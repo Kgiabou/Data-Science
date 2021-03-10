@@ -180,3 +180,19 @@ json2 <-jsonlite::fromJSON(toJSON(json1))
 json2[1,1:4]
 
 ## test
+
+if(!file.exists("./data")) {dir.create("./data")}
+fileUrl <- "https://opendata.arcgis.com/datasets/53319332a909407e8ee52ae8ea79663d_0.csv?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D"
+download.file(fileUrl, destfile = "./data/restaurants.csv",  method = "curl") ### store the file as "acs" defined in the quiz
+rests <- read.csv("./data/restaurants.csv", header = TRUE, sep = ",")
+
+
+chicago <- readRDS("chicago.rds")
+
+#### Metacharacters
+# ^ letter <- matches the beginning of sentences with the sequence of letters
+# letters$ <- matches the end of a sentence.
+# [Aa] [Cd] <- letters in square brackets match patterns throughout a text
+# [^?.]$ <- when ^in character classes it specifies to NOT look at these characters (at the end of sentence here)
+# . <- specifies any character (e.g. one.two will return one-two, one/two etc)
+# | <- is used to specify OR (so combine 2 metacharacters)
