@@ -183,3 +183,15 @@ json2[1,1:4]
 #### Foreign package for different types of data - SAS, SPSS etc
 #### EBImage from bioconductor for imaes
 #### sweeve, tuneR for music data
+
+library(reshape)
+head(mtcars)
+
+mtcars$carname <- rownames(mtcars)
+carMelt <- melt(mtcars, id.vars = c("carname","gear", "cyl"), measure.vars = c("mpg", "hp"))
+head(carMelt)
+tail(carMelt)
+
+## the opposite of melt is dcast #like proc transpose.#
+
+dcast
