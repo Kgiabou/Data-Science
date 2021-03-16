@@ -178,3 +178,8 @@ homeTL <- GET("http://api.twitter.com/1.1/statuses/home_timeline.json", sig)
 json1 <- content(homeTL)
 json2 <-jsonlite::fromJSON(toJSON(json1))
 json2[1,1:4]
+
+
+#### Foreign package for different types of data - SAS, SPSS etc
+#### EBImage from bioconductor for imaes
+#### sweeve, tuneR for music data
