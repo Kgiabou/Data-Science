@@ -26,25 +26,35 @@ s_test <- read.table("./test/subject_test.txt") %>%
           rename(Subjects=V1)
 
 
-activity <- read.table("activity_labels.txt") %>%
-            rename(Activity=V2)
+activity <- read.table("activity_labels.txt") 
+y_train2 <- merge(y_train, activity, by="V1")
+y_test2 <- merge(y_test, activity, by="V1")
 
 feature <- read.table("features.txt") %>%
            rename(Features=V2)
 
-colnames(X_train)  <- as.vector(featur$Features)
-colnames(X_test)  <- as.vector(featur$Features)
+colnames(X_train)  <- as.vector(feature$Features)
+colnames(X_test)  <- as.vector(feature$Features)
 
 
-Atrain <- cbind(s_train, y_train, X_train) 
-Atest  <- cbind(s_test, y_test,X_test)
-
-Atrain2 <- merge(activ, Atrain, by.x="V1", by.y="V1", all=FALSE) %>%
-           select(-V1)
-
-Atest <- 
-
-  
+Atrain <- cbind(s_train, Activity=y_train2[,2], X_train) 
+Atest  <- cbind(s_test, Activity=y_test2[,2], X_test)
 
 
-View(Xdata)
+
+all_data <- rbind(Atrain, Atest)
+
+cols <- which(grepl("mean|std.*", colnames(all_data)))
+all_d <- all_data[,c(1,2,cols)]
+
+colnames(all_d) <- gsub("[()]", "", colnames(all_d))
+all_d$Activity <- as.factor(all_d$Activity)
+
+library(reshape2)
+
+
+longData <- melt(all_d, id.vars = c("Subjects", "Activity"), na.rm = TRUE)
+
+avData <- dcast(longData, Subjects + Activity ~ variable, fun=mean)
+
+
